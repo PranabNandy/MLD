@@ -1,5 +1,17 @@
+#### Heap memory Corruption:
+-	Attempting to free memory already freed.
+-	Freeing memory that was not allocated.
+-	Attempting to read/write memory already freed.
+-	Attempting to read/write to memory which was never allocated.
+-	Memory allocation error.
+-	Reading/writing to memory out of the bounds of a dynamically allocated array
 
-![Screenshot](1.png)
+#### Memory leak description: 
+
+Memory is allocated but not released causing an application to consume memory reducing the available memory for other applications and eventually causing the system to page virtual memory to the hard drive slowing the application or crashing the application when than the computer memory resource limits are reached. The system may stop working as these limits are approached.
+
+	
+![Design](1.png)
 
 # Makefile
 
