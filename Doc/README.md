@@ -1,4 +1,12 @@
+#### Heap memory Corruption:
+-	Attempting to free memory already freed.
+-	Freeing memory that was not allocated.
+-	Attempting to read/write memory already freed.
+-	Attempting to read/write to memory which was never allocated.
+-	Memory allocation error.
+-	Reading/writing to memory out of the bounds of a dynamically allocated array
 
+	
 ![Screenshot](1.png)
 
 # Makefile
