@@ -33,6 +33,7 @@
 #include "mld.h"
 #include <memory.h>
 #include <stdlib.h>
+#include <assert.h>
 
 /*Application Structures*/
 
@@ -45,6 +46,14 @@ typedef struct emp_ {
     float salary;
 } emp_t;
 
+typedef struct student_{
+
+    char stud_name[32];
+    unsigned int rollno;
+    unsigned int age;
+    float aggregate;
+    struct student_ *best_colleage;
+} student_t;
 
 int
 main(int argc, char **argv){
@@ -53,49 +62,24 @@ main(int argc, char **argv){
     struct_db_t *struct_db = calloc(1, sizeof(struct_db_t));
 
     /*Create structure record for structure emp_t*/
-    struct_db_rec_t *emp_rec = calloc(1, sizeof(struct_db_rec_t) + (5*sizeof(field_info_t)));
+    static field_info_t emp_fields[] = {
+        FIELD_INFO(emp_t, emp_name, CHAR,    0),
+        FIELD_INFO(emp_t, emp_id,   UINT32,  0),
+        FIELD_INFO(emp_t, age,      UINT32,  0),
+        FIELD_INFO(emp_t, mgr,      OBJ_PTR, emp_t),
+        FIELD_INFO(emp_t, salary,   FLOAT, 0)
+    };
+    REG_STRUCT(struct_db, emp_t, emp_fields);
+    
+    static field_info_t stud_fiels[] = {
+        FIELD_INFO(student_t, stud_name, CHAR, 0),
+        FIELD_INFO(student_t, rollno,    UINT32, 0),
+        FIELD_INFO(student_t, age,       UINT32, 0),
+        FIELD_INFO(student_t, aggregate, FLOAT, 0),
+        FIELD_INFO(student_t, best_colleage, OBJ_PTR, student_t)
+    };
+    REG_STRUCT(struct_db, student_t, stud_fiels);
 
-    emp_rec->next = NULL;
-    strncpy(emp_rec->struct_name, "emp_t", strlen("emp_t"));
-    emp_rec->ds_size = sizeof(emp_t);
-    emp_rec->n_fields = 5;
-
-    /*Field 1 data :*/
-    strncpy(emp_rec->fields[0].fname, "emp_name", strlen("emp_name"));
-    emp_rec->fields[0].dtype = CHAR;
-    emp_rec->fields[0].size = 30;
-    emp_rec->fields[0].offset = OFFSETOF(emp_t, emp_name);
-    strncpy(emp_rec->fields[0].nested_str_name, "nil", strlen("nil"));
-
-    /*Field 2 data :*/
-    strncpy(emp_rec->fields[1].fname, "emp_id", strlen("emp_id"));
-    emp_rec->fields[1].dtype = UINT32;
-    emp_rec->fields[1].size = sizeof(unsigned int);
-    emp_rec->fields[1].offset = OFFSETOF(emp_t, emp_id);
-    strncpy(emp_rec->fields[1].nested_str_name, "nil", strlen("nil"));
-
-    /*Field 3 data :*/
-    strncpy(emp_rec->fields[2].fname, "age", strlen("age"));
-    emp_rec->fields[2].dtype = UINT32;
-    emp_rec->fields[2].size = sizeof(unsigned int);
-    emp_rec->fields[2].offset = OFFSETOF(emp_t, age);
-    strncpy(emp_rec->fields[2].nested_str_name, "nil", strlen("nil"));
-
-    /*Field 4 data :*/
-    strncpy(emp_rec->fields[3].fname, "mgr", strlen("mgr"));
-    emp_rec->fields[3].dtype = OBJ_PTR;
-    emp_rec->fields[3].size = sizeof(void*);
-    emp_rec->fields[3].offset = OFFSETOF(emp_t, mgr);
-    strncpy(emp_rec->fields[3].nested_str_name, "emp_t", strlen("emp_t"));
-
-    /*Field 5 data :*/
-    strncpy(emp_rec->fields[4].fname, "salary", strlen("salary"));
-    emp_rec->fields[4].dtype = FLOAT;
-    emp_rec->fields[4].size = sizeof(float);
-    emp_rec->fields[4].offset = OFFSETOF(emp_t, salary);
-    strncpy(emp_rec->fields[4].nested_str_name, "nil", strlen("nil"));
-
-    add_structure_to_struct_db(struct_db, emp_rec);
 
     print_structure_db(struct_db);
     return 0;

@@ -37,8 +37,8 @@
 #include "css.h"
 
 char *DATA_TYPE[] = {"UINT8", "UINT32", "INT32",
-    "CHAR", "OBJ_PTR", "FLOAT",
-    "DOUBLE", "OBJ_STRUCT"};
+    		     "CHAR", "OBJ_PTR", "FLOAT",
+    		     "DOUBLE", "OBJ_STRUCT"};
 
 /* Dumping Function */
 
@@ -70,7 +70,7 @@ print_structure_db(struct_db_t *struct_db){
     struct_rec = struct_db->head;
     printf("No of Structures Registered = %d\n", struct_db->count);
     while(struct_rec){
-        printf("structure No : %d (%p)\n", i, struct_rec);
+        printf("structure No : %d (%p)\n", i++, struct_rec);
         print_structure_rec(struct_rec);
         struct_rec = struct_rec->next;
     }
@@ -89,7 +89,12 @@ add_structure_to_struct_db(struct_db_t *struct_db,
         struct_db->count++;
         return 0;
     }
-
-    /*Rest of the cases, Implement yourself*/
-    return 0;
+    /*Add other structures into structure DB*/
+    else{
+        struct_rec->next = head;
+    	struct_db->head = struct_rec;
+    	struct_db->count++;
+    	return 0;
+    }
+    
 }
