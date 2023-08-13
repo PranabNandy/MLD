@@ -87,5 +87,26 @@ main(int argc, char **argv){
     
     
     
+
+    
+    
+    
+    /*Working with object database*/
+    
+    
+    /*Step 1 : Initialize a new Object database */
+    object_db_t *object_db = calloc(1, sizeof(object_db_t));
+    object_db->struct_db = struct_db;
+
+    /* Step 2 : Create some sample objects, equivalent to standard 
+     * calloc(1, sizeof(student_t))
+     */
+    student_t *abhishek = xcalloc(object_db, "student_t", 1);
+    student_t *shivani = xcalloc(object_db, "student_t", 1);
+    emp_t *joseph = xcalloc(object_db, "emp_t", 2);
+
+    print_object_db(object_db);
+    
+
     return 0;
 }
