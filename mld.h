@@ -50,7 +50,7 @@ typedef enum {
 } data_type_t;
 
 #define OFFSETOF(struct_name, fld_name) \
-    (unsigned int)&(((struct_name *)0)->fld_name)
+    (unsigned long)&(((struct_name *)0)->fld_name)
     
 #define FIELD_SIZE(struct_name, fld_name)   \
     sizeof(((struct_name *)0)->fld_name)

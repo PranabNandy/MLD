@@ -34,6 +34,7 @@
 #include <memory.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <stdio.h>
 
 /*Application Structures*/
 
@@ -61,7 +62,7 @@ main(int argc, char **argv){
     /*Step 1 : Initialize a new structure database */
     struct_db_t *struct_db = calloc(1, sizeof(struct_db_t));
 
-    /*Create structure record for structure emp_t*/
+    /*Step 2 : Create structure record for structure emp_t*/
     static field_info_t emp_fields[] = {
         FIELD_INFO(emp_t, emp_name, CHAR,    0),
         FIELD_INFO(emp_t, emp_id,   UINT32,  0),
@@ -69,8 +70,6 @@ main(int argc, char **argv){
         FIELD_INFO(emp_t, mgr,      OBJ_PTR, emp_t),
         FIELD_INFO(emp_t, salary,   FLOAT, 0)
     };
-    REG_STRUCT(struct_db, emp_t, emp_fields);
-    
     static field_info_t stud_fiels[] = {
         FIELD_INFO(student_t, stud_name, CHAR, 0),
         FIELD_INFO(student_t, rollno,    UINT32, 0),
@@ -78,9 +77,15 @@ main(int argc, char **argv){
         FIELD_INFO(student_t, aggregate, FLOAT, 0),
         FIELD_INFO(student_t, best_colleage, OBJ_PTR, student_t)
     };
+    
+    /*Step 3 : Register the structure in structure database*/
+    REG_STRUCT(struct_db, emp_t, emp_fields);
     REG_STRUCT(struct_db, student_t, stud_fiels);
 
-
+    /*Step 4 : Verify the correctness of structure database*/
     print_structure_db(struct_db);
+    
+    
+    
     return 0;
 }
