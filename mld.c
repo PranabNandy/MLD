@@ -33,6 +33,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 #include "mld.h"
 #include "css.h"
 
@@ -64,13 +65,13 @@ void
 print_structure_db(struct_db_t *struct_db){
 
     if(!struct_db) return;
-    printf("printing structure db\n");
+    printf(ANSI_COLOR_CYAN "Printing STRUCURE DATABASE\n");
     int i = 0;
     struct_db_rec_t *struct_rec = NULL;
     struct_rec = struct_db->head;
     printf("No of Structures Registered = %d\n", struct_db->count);
     while(struct_rec){
-        printf("structure No : %d (%p)\n", i++, struct_rec);
+        printf(ANSI_COLOR_CYAN "Structure No : %d (%p)\n", i++, struct_rec);
         print_structure_rec(struct_rec);
         struct_rec = struct_rec->next;
     }
@@ -82,14 +83,12 @@ add_structure_to_struct_db(struct_db_t *struct_db,
 
     struct_db_rec_t *head = struct_db->head;
 
-    /*Add first structure into structure DB*/
     if(!head){
         struct_db->head = struct_rec;
         struct_rec->next = NULL;
         struct_db->count++;
         return 0;
     }
-    /*Add other structures into structure DB*/
     else{
         struct_rec->next = head;
     	struct_db->head = struct_rec;
@@ -97,4 +96,102 @@ add_structure_to_struct_db(struct_db_t *struct_db,
     	return 0;
     }
     
+}
+
+
+static struct_db_rec_t *
+struct_db_look_up(struct_db_t *struct_db,
+                  char *struct_name){
+
+    struct_db_rec_t *head = struct_db->head;
+    if(!head) return NULL;
+
+    for(; head; head = head->next){
+        if(strncmp(head->struct_name, struct_name, MAX_STRUCTURE_NAME_SIZE) ==0)
+            return head;
+    }
+    return NULL;
+}
+
+
+static object_db_rec_t *
+object_db_look_up(object_db_t *object_db, void *ptr){
+
+    object_db_rec_t *head = object_db->head;
+    if(!head) return NULL;
+
+    for(; head; head = head->next){
+        if(head->ptr == ptr)
+            return head;
+    }
+    return NULL;
+}
+
+/*Working with objects*/
+static void
+add_object_to_object_db(object_db_t *object_db, 
+                     void *ptr, 
+                     int units,
+                     struct_db_rec_t *struct_rec){
+
+    object_db_rec_t *obj_rec = object_db_look_up(object_db, ptr);
+    /*Dont add same object twice*/
+    assert(!obj_rec);
+
+    obj_rec = calloc(1, sizeof(object_db_rec_t));
+
+    obj_rec->next = NULL;
+    obj_rec->ptr = ptr;
+    obj_rec->units = units;
+    obj_rec->struct_rec = struct_rec;
+
+    object_db_rec_t *head = object_db->head;
+
+    if(!head){
+        object_db->head = obj_rec;
+        obj_rec->next = NULL;
+        object_db->count++;
+        return;
+    }
+
+    obj_rec->next = head;
+    object_db->head = obj_rec;
+    object_db->count++;
+}
+
+
+void *
+xcalloc(object_db_t *object_db, 
+        char *struct_name, 
+        int units){
+
+    struct_db_rec_t *struct_rec = struct_db_look_up(object_db->struct_db, struct_name);
+    /*Dont allocate obj for missing structure record*/
+    assert(struct_rec);
+    void *ptr = calloc(units, struct_rec->ds_size);
+    add_object_to_object_db(object_db, ptr, units, struct_rec);
+    return ptr;
+}
+
+
+/*Dumping Functions for Object database*/
+void 
+print_object_rec(object_db_rec_t *obj_rec, int i){
+
+    if(!obj_rec) return;
+    printf(ANSI_COLOR_MAGENTA"-------------------------------------------------------------------------------------------|\n");
+    printf(ANSI_COLOR_YELLOW "%-3d ptr = %-10p | next = %-10p | units = %-4d | struct_name = %-10s |\n", 
+        i, obj_rec->ptr, obj_rec->next, obj_rec->units, obj_rec->struct_rec->struct_name); 
+    printf(ANSI_COLOR_MAGENTA "-------------------------------------------------------------------------------------------|\n");
+}
+
+void
+print_object_db(object_db_t *object_db){
+
+    object_db_rec_t *head = object_db->head;
+    unsigned int i = 0;
+    printf(ANSI_COLOR_CYAN "Printing OBJECT DATABASE\n");
+    for(; head; head = head->next){
+        print_object_rec(head, i++);
+    }
 }
