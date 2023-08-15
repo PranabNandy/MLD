@@ -171,6 +171,9 @@ mld_register_global_object_as_root (object_db_t *object_db,
 void
 mld_set_dynamic_object_as_root(object_db_t *object_db, void *obj_ptr);
 
+void 
+mld_init_primitive_data_types_support(struct_db_t *struct_db);
+
 
 /*APIs for MLD Algorithm*/
 void

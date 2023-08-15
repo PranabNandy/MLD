@@ -312,6 +312,10 @@ mld_explore_objects_recursively(object_db_t *object_db,
 
     /*Parent object must have already visited*/
     assert(parent_obj_rec->is_visited);
+    
+    if(parent_struct_rec->n_fields == 0){
+        return;
+    }
 
     for( i = 0; i < parent_obj_rec->units; i++){
 
@@ -431,6 +435,13 @@ mld_dump_object_rec_detail(object_db_rec_t *obj_rec){
 }
 
 
+/*Support for primitive data types*/
+void
+mld_init_primitive_data_types_support(struct_db_t *struct_db){
 
+    REG_STRUCT(struct_db, int , 0);
+    REG_STRUCT(struct_db, float , 0);
+    REG_STRUCT(struct_db, double , 0);
+}
 
 
