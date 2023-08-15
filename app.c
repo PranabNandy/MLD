@@ -102,11 +102,24 @@ main(int argc, char **argv){
      * calloc(1, sizeof(student_t))
      */
     student_t *abhishek = xcalloc(object_db, "student_t", 1);
+    mld_set_dynamic_object_as_root(object_db, abhishek);
+    
     student_t *shivani = xcalloc(object_db, "student_t", 1);
+    strncpy(shivani->stud_name, "shivani", strlen("shivani"));
+    //abhishek->best_colleage=shivani;            // Leaked the shiani object
+    
     emp_t *joseph = xcalloc(object_db, "emp_t", 2);
-
+    strncpy(joseph->emp_name, "joseph_1", strlen("joseph_1"));
+    strncpy(joseph->emp_name+sizeof(emp_t), "joseph_2", strlen("joseph_2"));
+    //mld_set_dynamic_object_as_root(object_db, joseph);  //  // Leaked the joseph object
+    
+    
     print_object_db(object_db);
     
+    
+    run_mld_algorithm(object_db);
+    printf("Leaked Objects : \n");
+    report_leaked_objects(object_db);
 
     return 0;
 }
