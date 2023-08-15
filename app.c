@@ -45,6 +45,7 @@ typedef struct emp_ {
     unsigned int age;
     struct emp_ *mgr;
     float salary;
+    int *p;
 } emp_t;
 
 typedef struct student_{
@@ -61,6 +62,8 @@ main(int argc, char **argv){
 
     /*Step 1 : Initialize a new structure database */
     struct_db_t *struct_db = calloc(1, sizeof(struct_db_t));
+    
+    mld_init_primitive_data_types_support(struct_db);
 
     /*Step 2 : Create structure record for structure emp_t*/
     static field_info_t emp_fields[] = {
@@ -68,7 +71,8 @@ main(int argc, char **argv){
         FIELD_INFO(emp_t, emp_id,   UINT32,  0),
         FIELD_INFO(emp_t, age,      UINT32,  0),
         FIELD_INFO(emp_t, mgr,      OBJ_PTR, emp_t),
-        FIELD_INFO(emp_t, salary,   FLOAT, 0)
+        FIELD_INFO(emp_t, salary,   FLOAT, 0),
+        FIELD_INFO(emp_t, p, OBJ_PTR, 0)
     };
     static field_info_t stud_fiels[] = {
         FIELD_INFO(student_t, stud_name, CHAR, 0),
@@ -110,9 +114,12 @@ main(int argc, char **argv){
     
     emp_t *joseph = xcalloc(object_db, "emp_t", 2);
     strncpy(joseph->emp_name, "joseph_1", strlen("joseph_1"));
-    strncpy(joseph->emp_name+sizeof(emp_t), "joseph_2", strlen("joseph_2"));
-    //mld_set_dynamic_object_as_root(object_db, joseph);  //  // Leaked the joseph object
-    
+    strncpy(joseph[1].emp_name, "joseph_2", strlen("joseph_2"));
+    //mld_set_dynamic_object_as_root(object_db, joseph);  // Leaked the joseph object
+    joseph->p = xcalloc(object_db, "int", 5);  // for joseph_1 object
+    *(joseph->p)=1000;
+    joseph[1].p = xcalloc(object_db, "int", 10); // for joseph_2 object
+    *(joseph[1].p)=2000;
     
     print_object_db(object_db);
     
