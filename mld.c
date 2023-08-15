@@ -34,6 +34,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <memory.h>
 #include "mld.h"
 #include "css.h"
 
@@ -132,7 +133,8 @@ static void
 add_object_to_object_db(object_db_t *object_db, 
                      void *ptr, 
                      int units,
-                     struct_db_rec_t *struct_rec){
+                     struct_db_rec_t *struct_rec,
+                     mld_boolean_t is_root){
 
     object_db_rec_t *obj_rec = object_db_look_up(object_db, ptr);
     /*Dont add same object twice*/
@@ -144,6 +146,8 @@ add_object_to_object_db(object_db_t *object_db,
     obj_rec->ptr = ptr;
     obj_rec->units = units;
     obj_rec->struct_rec = struct_rec;
+    obj_rec->is_visited = MLD_FALSE;
+    obj_rec->is_root = is_root;
 
     object_db_rec_t *head = object_db->head;
 
@@ -169,7 +173,8 @@ xcalloc(object_db_t *object_db,
     /*Dont allocate obj for missing structure record*/
     assert(struct_rec);
     void *ptr = calloc(units, struct_rec->ds_size);
-    add_object_to_object_db(object_db, ptr, units, struct_rec);
+    add_object_to_object_db(object_db, ptr, units, struct_rec,
+    		            MLD_FALSE);  /*xcalloc by default set the object as non-root*/
     return ptr;
 }
 
@@ -179,10 +184,11 @@ void
 print_object_rec(object_db_rec_t *obj_rec, int i){
 
     if(!obj_rec) return;
-    printf(ANSI_COLOR_MAGENTA"-------------------------------------------------------------------------------------------|\n");
-    printf(ANSI_COLOR_YELLOW "%-3d ptr = %-10p | next = %-10p | units = %-4d | struct_name = %-10s |\n", 
-        i, obj_rec->ptr, obj_rec->next, obj_rec->units, obj_rec->struct_rec->struct_name); 
-    printf(ANSI_COLOR_MAGENTA "-------------------------------------------------------------------------------------------|\n");
+    
+printf(ANSI_COLOR_MAGENTA "-----------------------------------------------------------------------------------------------------|\n"ANSI_COLOR_RESET);
+    printf(ANSI_COLOR_YELLOW "%-3d ptr = %-10p | next = %-10p | units = %-4d | struct_name = %-10s | is_root = %s |\n"ANSI_COLOR_RESET, 
+        i, obj_rec->ptr, obj_rec->next, obj_rec->units, obj_rec->struct_rec->struct_name, obj_rec->is_root ? "TRUE " : "FALSE"); 
+    printf(ANSI_COLOR_MAGENTA "-----------------------------------------------------------------------------------------------------|\n"ANSI_COLOR_RESET);
 }
 
 void
@@ -194,4 +200,33 @@ print_object_db(object_db_t *object_db){
     for(; head; head = head->next){
         print_object_rec(head, i++);
     }
+}
+
+/* The global object of the application which is not created by xcalloc
+ * should be registered with MLD using below API
+ */
+void
+mld_register_global_object_as_root (object_db_t *object_db, 
+                          void *objptr,
+                          char *struct_name,
+                          unsigned int units){
+
+    struct_db_rec_t *struct_rec = struct_db_look_up(object_db->struct_db, struct_name);
+    assert(struct_rec);
+
+   /*Create a new object record and add to object database*/
+   add_object_to_object_db(object_db, objptr, units, struct_rec, MLD_TRUE);  
+}
+
+
+/* Application might create an object using xcalloc , but at the same time the object
+ * can be root object. Use this API to override the object flags for the object already
+ * preent in object db
+ */
+mld_set_dynamic_object_as_root(object_db_t *object_db, void *obj_ptr){
+
+    object_db_rec_t *obj_rec = object_db_look_up(object_db, obj_ptr);
+    assert(obj_rec);
+
+    obj_rec->is_root = MLD_TRUE;
 }
