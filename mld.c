@@ -358,7 +358,8 @@ mld_explore_objects_recursively(object_db_t *object_db,
                  * If this child object is already visited, then do nothing - avoid infinite loops*/
                 if(!child_object_rec->is_visited){
                     child_object_rec->is_visited = MLD_TRUE;
-                    mld_explore_objects_recursively(object_db, child_object_rec);
+                    if(field_info->dtype != VOID_PTR) /*Explore next object only when it is not a VOID_PTR*/
+                    	mld_explore_objects_recursively(object_db, child_object_rec);
                 }
                 else{
                     continue; /*Do nothing, explore next child object*/
