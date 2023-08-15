@@ -49,6 +49,12 @@ typedef enum {
     OBJ_STRUCT
 } data_type_t;
 
+typedef enum{
+
+    MLD_FALSE,
+    MLD_TRUE
+} mld_boolean_t;
+
 #define OFFSETOF(struct_name, fld_name) \
     (unsigned long)&(((struct_name *)0)->fld_name)
     
@@ -130,12 +136,15 @@ struct _object_db_rec_{
     void *ptr;
     unsigned int units;
     struct_db_rec_t *struct_rec;
+    mld_boolean_t is_visited; /*Used for Graph traversal*/
+    mld_boolean_t is_root;    /*Is this object is Root object*/
 };
 
 typedef struct _object_db_{
     struct_db_t *struct_db;
     object_db_rec_t *head;
     unsigned int count;
+    
 } object_db_t;
 
 
@@ -151,5 +160,15 @@ print_object_db(object_db_t *object_db);
 /*API to malloc the object*/
 void*
 xcalloc(object_db_t *object_db, char *struct_name, int units);
+
+/*APIs to register root objects*/
+void 
+mld_register_global_object_as_root (object_db_t *object_db, 
+                               void *objptr, 
+                               char *struct_name, 
+                               unsigned int units);
+
+void
+mld_set_dynamic_object_as_root(object_db_t *object_db, void *obj_ptr);
 
 #endif /* __MLD__ */
