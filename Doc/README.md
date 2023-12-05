@@ -1,3 +1,24 @@
+# Overview
+
+- Since the advent of C/C++ Programming language, Memory management is one of the responsibility which the developer has to deal with 
+ - C/C++ Softwares often suffers from Two Memory related Problems like
+ - Memory corruption
+ - Memory leak
+ - Unlike Java, C/C++ do not have the luxury for automatic garbage collection
+ - Java do not allow programmer to access the physical memory directly, but C/C++ does. Therefore Java applications do not suffer from Memory corruption either, but C/C++ do
+ - In this project, we will design and implement memory leak detector (MLD) tool for C programs, easily extendible to C++ as well
+
+![Screenshot from 2023-12-05 19-19-17](https://github.com/PranabNandy/MLD/assets/34576104/0e995d18-1c11-49cf-8d50-edf84f57c391)
+![Screenshot from 2023-12-05 19-24-10](https://github.com/PranabNandy/MLD/assets/34576104/b0904307-c457-4729-8326-cc39850d3d8e)
+
+#### Phase 1
+- structure database creation
+- It is the responsibility of the application to tell the MLD library during initialization about all structures it is using. This is called **structure registration**
+- MLD library will maintain the structure database (preferably a linked-list) to store application structure information
+- Key to search in structure database is “name of structure”
+
+  
+
 #### Heap memory Corruption:
 -	Attempting to free memory already freed.
 -	Freeing memory that was not allocated.
@@ -9,6 +30,7 @@
 #### Memory leak description: 
 
 Memory is allocated but not released causing an application to consume memory reducing the available memory for other applications and eventually causing the system to page virtual memory to the hard drive slowing the application or crashing the application when than the computer memory resource limits are reached. The system may stop working as these limits are approached.
+
 
 	
 ![Design](1.png)
