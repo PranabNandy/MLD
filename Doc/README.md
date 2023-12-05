@@ -18,6 +18,15 @@
 - Key to search in structure database is “name of structure”
 
   
+#### Phase 2
+- Now, Its time that MLD libraries also knows about all objects the application has malloc’d
+- Whenever the application malloc a new object, MLD library will store the relevant information about this object such as
+- ➢➢  Corresponding structure details of the object
+- ➢➢ Address of the object
+- The object record holds the above information of the object
+- Idea is, MLD library must have all information about all dynamic objects the application is using at any point of time
+- MLD library maintains a database called **Object database** to keep track of all dynamic objects being used by the application
+
 
 #### Heap memory Corruption:
 -	Attempting to free memory already freed.
