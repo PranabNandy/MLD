@@ -115,7 +115,7 @@ main(int argc, char **argv){
     emp_t *joseph = xcalloc(object_db, "emp_t", 2);
     strncpy(joseph->emp_name, "joseph_1", strlen("joseph_1"));
     strncpy(joseph[1].emp_name, "joseph_2", strlen("joseph_2"));
-    //mld_set_dynamic_object_as_root(object_db, joseph);  // Leaked the joseph object
+    mld_set_dynamic_object_as_root(object_db, joseph);  // Not Leaked the joseph object
     joseph->p = xcalloc(object_db, "int", 5);  // for joseph_1 object
     *(joseph->p)=1000;
     joseph[1].p = xcalloc(object_db, "int", 10); // for joseph_2 object
