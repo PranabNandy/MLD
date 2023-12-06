@@ -122,9 +122,9 @@ That’s why MLD library assumes root objects (Dynamic or Global are always reac
 
 
 ------------------------------------------------------------------------------------------------------------
-
+# Assignment on
 # Makefile
-![Design](1.png)
+
 TARGET:exe
 
 #### common_math.o:common_math/common_math.c
@@ -151,7 +151,7 @@ TARGET:exe
 
 	gcc -c -I common_math -I complex_math -I trig_math main.c -o main.o
 	
-	
+![Design](1.png)	
 
 ## -lm == <math.h>   == libmath.so
 	
