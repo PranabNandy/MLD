@@ -81,11 +81,50 @@ nodes
 ![Screenshot from 2023-12-06 00-50-41](https://github.com/PranabNandy/MLD/assets/34576104/be22dcc8-26e5-4a17-9fa2-9502152fb419)
 
 
+- Our MLD Library `assumes dynamic root objects of the application are also never leaked by the application`. If DRO are leaked
+by the application, our MLD algorithm will not report it since it starts Memory leak detection algorithm from root object assuming
+root objects are always reachable
+- And it make sense, you want to start your journey and you need to cover 100 stations starting from station 1 where you are already present.
+Its not possible that you wont reach station 1 starting from station 1 (paradox ! :p)
+That’s why MLD library assumes root objects (Dynamic or Global are always reachable)
 
-![Design](1.png)
+![Screenshot from 2023-12-06 10-47-26](https://github.com/PranabNandy/MLD/assets/34576104/57aaa238-07c3-4251-9efa-c8949175be06)
+
+
+## Optimization Phase
+- Our MLD library, at this point of time, is tightly coupled with application which is not a good thing
+- ➢ Our application need to create object database and structure database explicitly
+- ➢ Our application need to maintain pointers to object database and structure database so that it can pass these pointers to xcalloc and xfree functions
+- ➢ Our application has direct access to structure database and object databases which must be sole proprietary assets of MLD library and application has no business to have direct access to these databases other than through MLD public functions/APIs
+- Decoupling of MLD library with application will help application to stay naive and unaware of internals of MLD library
+- Applications must know only WHAT aspects of the library and not HOW the library achieve its goals
+
+
+
+## Limitation
+
+![Screenshot from 2023-12-06 12-52-30](https://github.com/PranabNandy/MLD/assets/34576104/420c14da-ca97-498a-9593-af21e13c6aa1)
+![Screenshot from 2023-12-06 12-56-05](https://github.com/PranabNandy/MLD/assets/34576104/610a2f24-3d1f-4874-a6b7-632b75b1a2bf)
+
+![Screenshot from 2023-12-06 12-56-29](https://github.com/PranabNandy/MLD/assets/34576104/52db49ee-3d7a-48f5-b345-6eddcecfaffc)
+
+
+![Screenshot from 2023-12-06 12-47-57](https://github.com/PranabNandy/MLD/assets/34576104/e544dcd2-7106-49a8-b9d8-454c493fa0ec)
+
+
+## Conclusion
+![Screenshot from 2023-12-06 12-47-14](https://github.com/PranabNandy/MLD/assets/34576104/577dc72b-9150-40c0-aca9-4534c6050a8a)
+
+
+
+
+
+
+
+------------------------------------------------------------------------------------------------------------
 
 # Makefile
-
+![Design](1.png)
 TARGET:exe
 
 #### common_math.o:common_math/common_math.c
