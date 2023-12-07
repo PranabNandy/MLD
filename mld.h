@@ -44,6 +44,7 @@ typedef enum {
     INT32,
     CHAR,
     OBJ_PTR,
+    VOID_PTR, /*New Data type added to identify void * pointers*/
     FLOAT,
     DOUBLE,
     OBJ_STRUCT

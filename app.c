@@ -31,10 +31,14 @@
  */
 
 #include "mld.h"
+#include "css.h"
 #include <memory.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <stdio.h>
+
+/*Application Structures*/
+
 
 /*Application Structures*/
 
@@ -57,13 +61,19 @@ typedef struct student_{
     struct student_ *best_colleage;
 } student_t;
 
-int
-main(int argc, char **argv){
+struct_db_t *struct_db;
 
+object_db_t *object_db;
+
+void
+struct_db_init(){
     /*Step 1 : Initialize a new structure database */
-    struct_db_t *struct_db = calloc(1, sizeof(struct_db_t));
-    
+    struct_db = calloc(1, sizeof(struct_db_t));
     mld_init_primitive_data_types_support(struct_db);
+}
+
+void
+struct_db_regis(){
 
     /*Step 2 : Create structure record for structure emp_t*/
     static field_info_t emp_fields[] = {
@@ -74,6 +84,9 @@ main(int argc, char **argv){
         FIELD_INFO(emp_t, salary,   FLOAT, 0),
         FIELD_INFO(emp_t, p, OBJ_PTR, 0)
     };
+    /*Step 3 : Register the structure in structure database*/
+    REG_STRUCT(struct_db, emp_t, emp_fields);
+
     static field_info_t stud_fiels[] = {
         FIELD_INFO(student_t, stud_name, CHAR, 0),
         FIELD_INFO(student_t, rollno,    UINT32, 0),
@@ -81,52 +94,73 @@ main(int argc, char **argv){
         FIELD_INFO(student_t, aggregate, FLOAT, 0),
         FIELD_INFO(student_t, best_colleage, OBJ_PTR, student_t)
     };
-    
-    /*Step 3 : Register the structure in structure database*/
-    REG_STRUCT(struct_db, emp_t, emp_fields);
     REG_STRUCT(struct_db, student_t, stud_fiels);
 
-    /*Step 4 : Verify the correctness of structure database*/
-    print_structure_db(struct_db);
-    
-    
     
 
-    
-    
-    
+}
+
+void 
+object_db_init(){
     /*Working with object database*/
-    
-    
     /*Step 1 : Initialize a new Object database */
-    object_db_t *object_db = calloc(1, sizeof(object_db_t));
+    object_db = calloc(1, sizeof(object_db_t));
     object_db->struct_db = struct_db;
+}
 
-    /* Step 2 : Create some sample objects, equivalent to standard 
-     * calloc(1, sizeof(student_t))
-     */
-    student_t *abhishek = xcalloc(object_db, "student_t", 1);
+void 
+object_1_2_create(){
+    /*Step 2 : Create some sample objects, equivalent to standard
+     * calloc(1, sizeof(student_t))*/
+    student_t *abhishek = xcalloc(object_db, "student_t", 5);
     mld_set_dynamic_object_as_root(object_db, abhishek);
     
+    student_t *pranab = xcalloc(object_db, "student_t", 2);
+    strncpy(pranab->stud_name, "pranab", strlen("pranab"));
+    strncpy(pranab[1].stud_name, "nandy_2", strlen("nandy_2"));
+    //abhishek->best_colleage = pranab;
+}
+
+void 
+object_3_create(){
     student_t *shivani = xcalloc(object_db, "student_t", 1);
     strncpy(shivani->stud_name, "shivani", strlen("shivani"));
-    //abhishek->best_colleage=shivani;            // Leaked the shiani object
-    
-    emp_t *joseph = xcalloc(object_db, "emp_t", 2);
-    strncpy(joseph->emp_name, "joseph_1", strlen("joseph_1"));
-    strncpy(joseph[1].emp_name, "joseph_2", strlen("joseph_2"));
-    mld_set_dynamic_object_as_root(object_db, joseph);  // Not Leaked the joseph object
-    joseph->p = xcalloc(object_db, "int", 5);  // for joseph_1 object
-    *(joseph->p)=1000;
-    joseph[1].p = xcalloc(object_db, "int", 10); // for joseph_2 object
-    *(joseph[1].p)=2000;
-    
+    //abhishek->best_colleage = shivani;
+
+}
+
+void 
+object_4_create(){
+    emp_t *joseph = xcalloc(object_db, "emp_t", 3);
+    mld_set_dynamic_object_as_root(object_db, joseph);
+    joseph->p = xcalloc(object_db, "int", 1);
+
+}
+
+int
+main(int argc, char **argv){
+
+    struct_db_init();
+    struct_db_regis();
+   
+    /*Step 4 : Verify the correctness of structure database*/
+    print_structure_db(struct_db);
+
+    object_db_init();
+   
+    object_1_2_create(); 
+    object_3_create();
+    object_4_create(); 
+
+    /*  Verify the correctness of object database*/ 
     print_object_db(object_db);
-    
-    
+
     run_mld_algorithm(object_db);
     printf("Leaked Objects : \n");
     report_leaked_objects(object_db);
+
+    printf(ANSI_STYLE_UNDERLINE ANSI_STYLE_BOLD "\n ---------- Successfully freed the Leaked Objects  Memory -------- \n\n\n" ANSI_COLOR_RESET);
+    print_object_db(object_db);
 
     return 0;
 }
